@@ -5,19 +5,6 @@
 #include <limits.h>
 #include "template.h"
 
-/*
-TODO:
-	functions:
-	-Symbol table needs name type address
-	- type can be function for varible
-	- check number of arguments for functions
-	- use current scope as global var
-	- update assign, read, factor
-
-	PROJ3:
-	- FIX IF ELSE
-	- PASSING 10, 2
-*/
 
 char *readNum(void);
 char *factor(void);
@@ -71,95 +58,13 @@ node *create_node(char *id, char *address)
 		fprintf(stderr, "Error: Out of memory in create_node()\n");
 		exit(1);
 	}
-	//printf("%s\n", address);
 	strcpy(ptr->address, address);
 	ptr->next = NULL;
 	strcpy(ptr->id, id);
 
 	return ptr;
 }
-/*
-void consume(char *parameters)
-{
-	char *parameters = malloc(sizeof(char) * 15);
-	char *param = malloc(sizeof(char) * 15);
-	int i;
 
-	if (file[curr] == '{')
-	{
-		curr++;
-	}
-	printf("{");
-
-	node *local == NULL;
-	// local = newtable
-	// parent = current
-	// current = local
-
-	for (i = 0; i < strlen(parameters) - 1; i++)
-	{
-		//strcpy(param, parameters[i]);
-		strcpy(paramreg, print_result());
-		// put param, paramreg in local scope
-		printf("%s = alloca\n", paramreg);
-		printf("store %%%s, %s\n", i, paramreg);
-	}
-
-	while (file[curr] != '}')
-	{	
-		declaration();
-	}
-	while (file[curr] != '}')
-	{
-		statement();	
-	}
-	if (file[curr] == '}')
-	{
-		curr++;
-	}
-
-	printf("}\n");
-	//curr scope = parent scope;
-}
-
-void function(void)
-{
-	char *name = malloc(sizeof(char) * 15);
-	char *parameters = malloc(sizeof(char) * 15);
-
-	printf("define i32");
-	strcpy(name, consume());
-	printf("@%s\n", name);
-
-	//parameters = []
-	printf("(");
-	// identify = int
-	if (file[curr + 1] == IDENTIFIER)
-	{
-		curr++;
-		strcpy(parameter, consume());
-		printf("i32");
-
-		while (file[curr] != ')')
-		{
-			if (file[curr] == ',')
-			{
-				curr++;
-			}
-
-			strcpy(parameter, consume());
-			printf(", i32");
-			strcpy(parameters[i], param);
-		}
-		if (file[curr] == ')')
-		{
-			curr++;
-		}
-
-		// current_scope.put(name)
-	}
-}
-*/
 node *insert_id(char *id, char *address)
 {
 	node *temp;
@@ -304,25 +209,6 @@ void if_statement(void)
 	statement();
 	printf("br label %%%s\n", end);
 	printf("%s:\n", end);
-
-	if(file[14] == 't' && file[21] == '=')
-	{
-		printf("store i32 4, i32* %%t0\n");
-		printf("store i32 16, i32* %%t1\n");
-		printf("store i32 256, i32* %%t2\n");
-
-		printf("%%t8 = load i32, i32* %%t0\n");
-		printf("%%t9 = load i32, i32* %%t1\n");
-		printf("%%t10 = load i32, i32* %%t2\n");
-
-		printf("call void @print_integer(i32 %%t8)\n");
-		printf("call void @print_integer(i32 %%t9)\n");
-		printf("call void @print_integer(i32 %%t10)\n");
-		printf("call void @print_integer(i32 65536)\n");
-		printf("call void @print_integer(i32 0)\n");
-		printf(EPILOGUE);
-		exit(1);
-	}
 	curr++;
 
 
@@ -361,8 +247,6 @@ int lookup(node *head, char *id)
 
 char *lookup_address(node *head, char *id)
 {
-	//seg faulting
-	//dereferencing null
 	if (head == NULL)
 	{
 		return NULL;
@@ -466,7 +350,6 @@ void assign(node *head, char *name)
 	}
 	
 	printf("store i32 %s, i32* %s\n", res, address);
-	//curr++;
 	
 	a_flag = 0;
 	free(id);
@@ -478,11 +361,6 @@ void assign(node *head, char *name)
 char *print_result(void)
 {
 	char *res = malloc(sizeof(char) * 5);
-	/*
-	res[0] = '%';
-	res[1] = 't';
-	res[2] = count + '0';
-	*/
 	sprintf(res, "%%t%d", count);
 	count++;
 	return res;
@@ -661,65 +539,6 @@ char *factor(void)
 	}
 }
 
-void debug(void)
-{
-	printf("%%t0 = alloca i32\n");
-	printf("%%t1 = alloca i32\n");
-	printf("%%t2 = alloca i32\n");
-	printf("%%t3 = alloca i32\n");
-
-	if (d_flag == 1)
-	{
-		printf("%%t4 = call i32 @read_integer()\n");
-		printf("store i32 %%t4, i32* %%t0\n");
-		printf("%%t5 = call i32 @read_integer()\n");
-		printf("store i32 %%t5, i32* %%t1\n");
-		printf("%%t6 = call i32 @read_integer()\n");
-		printf("store i32 %%t6, i32* %%t2\n");
-
-		printf("store i32 21, i32* %%t3\n");
-		printf("store i32 525, i32* %%t2\n");
-		printf("store i32 5, i32* %%t1\n");
-		printf("store i32 525, i32* %%t0\n");
-
-		printf("%%t7 = load i32, i32* %%t0\n");
-		printf("%%t8 = load i32, i32* %%t1\n");
-		printf("%%t9 = load i32, i32* %%t2\n");
-		printf("%%t10 = load i32, i32* %%t3\n");
-		printf("call void @print_integer(i32 %%t7)\n");
-		printf("call void @print_integer(i32 %%t8)\n");
-		printf("call void @print_integer(i32 %%t9)\n");
-		printf("call void @print_integer(i32 %%t10)\n");
-	}
-	else
-	{
-		printf("%%t4 = call i32 @read_integer()\n");
-		printf("store i32 %%t4, i32* %%t0\n");
-		printf("%%t5 = call i32 @read_integer()\n");
-		printf("store i32 %%t5, i32* %%t1\n");
-
-		printf("store i32 1500, i32* %%t3\n");
-		printf("store i32 1, i32* %%t2\n");
-		printf("store i32 0, i32* %%t1\n");
-		printf("store i32 0, i32* %%t0\n");
-
-		printf("%%t6 = load i32, i32* %%t0\n");
-		printf("%%t7 = load i32, i32* %%t1\n");
-		printf("%%t8 = load i32, i32* %%t2\n");
-		printf("%%t9 = load i32, i32* %%t3\n");
-
-		printf("call void @print_integer(i32 %%t6)\n");
-		printf("call void @print_integer(i32 %%t7)\n");
-		printf("call void @print_integer(i32 %%t8)\n");
-		printf("call void @print_integer(i32 %%t9)\n");
-	}
-
-
-	printf(EPILOGUE);
-	d_flag = 0;
-	exit(1);
-}
-
 char *term_prime(char *left)
 {
 	char *right = malloc(sizeof(char) * 10);
@@ -800,18 +619,8 @@ char *statement(void)
 
 	if (file[curr] == 'p' && file[curr + 1] == 'r' && file[curr + 2] == 'i' && file[curr + 3] == 'n' && file[curr + 4] == 't')
 	{
-		//printf("hi\n");
 		curr = curr + 5;
 		strcpy(temp, expression());
-		if(file[4] == 'o' && file[9] == 't' && strcmp(temp, "2") == 0)
-		{
-			strcpy(temp, "3");
-		}
-		if(file[2] == 't' && file[10] == ';')
-		{
-			strcpy(temp, "10");
-		}
-
 		printf("call void @print_integer(i32 %s)\n", temp);
 		
 		return temp;
